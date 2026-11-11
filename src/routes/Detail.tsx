@@ -1,14 +1,57 @@
-// 이 파일은 글 상세 화면을 담당하는 컴포넌트 파일
-
 import { Link, useParams } from "react-router";
 import { useEffect, useState } from "react";
-import styles from "./Detail.module.css";
-import { StyledContainer, StyledLoading } from "../styles/commonStyle.ts";
+import { StyledLoading } from "../styles/commonStyle.ts";
+import type { Post } from "../types/Post.ts";
+import styled from "styled-components";
+
+const Container = styled.div`
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 20px;
+`;
+
+const BackLink = styled(Link)`
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 32px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #f1f3f5;
+    border: 1px solid #666;
+
+    &:hover {
+        background-color: #e9ecef;
+        color: #0077ff;
+    }
+`;
+
+const Article = styled.article`
+    padding-top: 40px;
+`;
+
+const Title = styled.h1`
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #111;
+    margin-bottom: 24px;
+`;
+
+const Meta = styled.div`
+    color: #888;
+    margin-bottom: 40px;
+`;
+
+const Body = styled.div`
+    font-size: 1.15rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+`;
 
 function Detail() {
     const { id } = useParams();
 
-    const [post, setPost] = useState(null);
+    const [post, setPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -18,7 +61,13 @@ function Detail() {
                 setPost(json);
                 setLoading(false);
             })
-            .catch(err => console.log(err));
+            .catch((err: unknown) => {
+                if (err instanceof Error) {
+                    console.log(err.message);
+                } else {
+                    console.log("알 수 없는 에러 : " + err);
+                }
+            });
     }, []);
 
     if (loading) {
@@ -30,21 +79,21 @@ function Detail() {
     }
 
     return (
-        <StyledContainer>
-            <Link to={"/"} className={styles.backLink}>
+        <Container>
+            <BackLink to={"/"}>
                 &larr; 목록으로 돌아가기
-            </Link>
+            </BackLink>
 
-            <article className={styles.article}>
-                <h1 className={styles.title}>{post.title}</h1>
-                <div className={styles.meta}>
+            <Article>
+                <Title>{post.title}</Title>
+                <Meta>
                     <span>게시물 번호 : {post.id}</span>
                     <span style={{ margin: "0 12px" }}>|</span>
                     <span>작성자 : {post.userId}</span>
-                </div>
-                <div className={styles.body}>{post.body}</div>
-            </article>
-        </StyledContainer>
+                </Meta>
+                <Body>{post.body}</Body>
+            </Article>
+        </Container>
     );
 }
 
