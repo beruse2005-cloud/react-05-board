@@ -63,9 +63,9 @@ function Detail() {
             })
             .catch((err: unknown) => {
                 if (err instanceof Error) {
-                    console.log(err.message);
+                    setLoading(false);
                 } else {
-                    console.log("알 수 없는 에러 : " + err);
+                    console.log(err);
                 }
             });
     }, []);
